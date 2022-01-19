@@ -1,0 +1,26 @@
+{
+    "CO2FT-0918-001": {
+        "2021-07-06": {
+            "calibration date": "2021-07-06",
+            "valid until": "undefined",
+            "source": "pre values and F,T, NDIR spec from 2019 Svalbard calibration sheet. k-values are 2021 april values. 'NDIR_specific_temp_T_sensor' unclear where this comes from. T0 in kelvin?",
+            "NDIR_specific_scalefactor_F": 61470,
+            "T_sensor": 47.9,
+            "NDIR_specific_temp_T_sensor": 313.15,
+            "k1": 0.05736126,
+            "k2": 0.000002472803,
+            "k3": 0.0000000003173362
+        },
+        "2019-10-10": {
+            "calibration date": "2019-10-10 ",
+            "valid until": "2021-07-05",
+            "source": "Svalbard calibration sheet 2019 ",
+            "NDIR_specific_scalefactor_F": 61470,
+            "T_sensor": 47.9,
+            "NDIR_specific_temp_T_sensor": 313.15,
+            "k1": 0.05430340,
+            "k2": 3.674069e-6,
+            "k3": 1.981525e-10
+        }
+    }
+}
