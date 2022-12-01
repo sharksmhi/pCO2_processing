@@ -49,16 +49,19 @@ class Correction:
         # returns list of values when two lists are supplied
         two_beam_signal = []
         for raw_signal, reference_signal in zip(raw_signal, reference_signal):
-            twobeamsignal = (
-                raw_signal / reference_signal
-            )  # * T_sensor # temperature cancels out in next step
+            if any((raw_signal <= 0, reference_signal <= 0)):
+                twobeamsignal = np.nan
+            else:
+                twobeamsignal = (
+                    raw_signal / reference_signal
+                )  # * T_sensor # temperature cancels out in next step
             two_beam_signal.append(twobeamsignal)
 
         return two_beam_signal
 
-    def get_zero_correction(self, timestamp, slope, intercept):
+    def get_zero_correction(self, timenumeric, slope, intercept):
         # calculate zero signal at given timestamp
-        return slope * timestamp + intercept
+        return slope * timenumeric + intercept
 
     def get_drift_corrected_signal(self, two_beam_signal, zero_correction):
         # change name to zero_two_beam_signal

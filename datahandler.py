@@ -4,6 +4,7 @@
 # pandas dataframes are used to hold data
 
 # import modules
+from email import message
 import pandas as pd
 import datetime as dt
 import numpy as np
@@ -13,6 +14,12 @@ import os
 
 
 def modify_linear_regression_log(linear_regression_log, year, id, start, stop, action):
+
+    """
+    action arguments:
+        - remove an exisiting period, all other arguments must match a row
+        - add a new row to the linear_regression_log, does not add if the given start and stop already exists.
+    """
     regression_period = [start, stop]
     try:
         linear_regression_log[year]
@@ -92,13 +99,30 @@ def add_flag(df, start, stop, flag_string=""):
         df["timestamp"] >= start_timestamp
     )
 
-    df["Q_flag"].loc[selection] = flag_string
+    df["Quality"].loc[selection] = flag_string
 
     return df
     """
 def convert_to_timestamp(timestring, format="%Y.%m.%d %H:%M:%S"):
 
     return dt.datetime.strptime(timestring, format).timestamp()"""
+
+
+def get_valid_data(
+    dataframe,
+    validation_dict={"Q_flag": ["0: Operate"], "state": ["Measure"]},
+    condition="or",
+):
+    combined_filter = bool(len(dataframe))
+    for key, value in validation_dict.items():
+        for validation_value in value:
+            boolean = dataframe[key] == validation_value
+            if condition == "and":
+                combined_filter = combined_filter & boolean
+            elif condition == "or":
+                combined_filter = combined_filter | boolean
+
+    return dataframe.loc[combined_filter, :]
 
 
 def convert_to_timestamp(timestring, format="%Y.%m.%d %H:%M:%S"):
@@ -155,7 +179,7 @@ def _read_to_timestamp_dict(
         for line in fid:
 
             if "\x00" in line:
-                print("".format(file_obj.path, i))
+                print("\x00 format error in {} on line {}".format(file_obj.path, i))
                 continue
             if line.startswith(comment_id):
                 header.append(line)
@@ -168,27 +192,27 @@ def _read_to_timestamp_dict(
                 split_line = [item.strip() for item in split_line]
                 timestring = split_line[header_line.index("Timestamp")]
                 timestamp = convert_to_timestamp(timestring)
-                add_parameter_to_timestamp_in_dict(
+                info = add_parameter_to_timestamp_in_dict(
                     data_dict, timestamp, "timestring", timestring
                 )
 
                 if isinstance(parameter, str):
                     value = split_line[header_line.index("Quality")]
-                    add_parameter_to_timestamp_in_dict(
+                    info = add_parameter_to_timestamp_in_dict(
                         data_dict,
                         timestamp,
                         "{}_Quality".format(parameter),
                         qc_flags.get(int(value), "{}: unknown".format(str(value))),
                     )
                     value = float(split_line[header_line.index(parameter)])
-                    add_parameter_to_timestamp_in_dict(
+                    info = add_parameter_to_timestamp_in_dict(
                         data_dict, timestamp, parameter, value
                     )
 
                 else:
                     zero_parameters = parameter
                     value = split_line[header_line.index("Quality")]
-                    add_parameter_to_timestamp_in_dict(
+                    info = add_parameter_to_timestamp_in_dict(
                         data_dict,
                         timestamp,
                         "{}_Quality".format("Signal_Raw"),
@@ -197,7 +221,7 @@ def _read_to_timestamp_dict(
                     for zero_parameter in zero_parameters:
                         if zero_parameter != "ZeroCycle":
                             value = float(split_line[header_line.index(zero_parameter)])
-                            add_parameter_to_timestamp_in_dict(
+                            info = add_parameter_to_timestamp_in_dict(
                                 data_dict, timestamp, zero_parameter, value
                             )
             i = i + 1
@@ -208,10 +232,16 @@ def add_parameter_to_timestamp_in_dict(data_dict, timestamp, key, value):
         data_dict[timestamp] = {}
     if key not in data_dict[timestamp].keys():
         data_dict[timestamp][key] = value
-    else:
+        return True, "{} added to datadict".format(key)
+    elif value != data_dict[timestamp][key]:
+        try:
+            mean_value = (float(data_dict[timestamp][key])+ value)/2
+        except ValueError:
+            mean_value = value
+        message = "{}: {} already added at {} ({}) but with different value, {}. Using mean value {}".format(key, value, timestamp, dt.datetime.fromtimestamp(timestamp), data_dict[timestamp][key], mean_value)
+        data_dict[timestamp][key] = mean_value
         # TODO: return warning/log when key, value already added at timestamp
-        # print("{}: {} already added at {}".format(key, value, timestamp))
-        pass
+        return False, message
 
 
 def _read_to_dataframe(
