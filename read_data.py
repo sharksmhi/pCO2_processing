@@ -405,7 +405,7 @@ class ProcessData:
 
         # Add State_flush if not 0 when Quality is "16384: flush"
         dataframe.loc[
-            (dataframe["State_Flush"] == 0)
+            (dataframe["State_Flush"] > 0)
             & (dataframe["State_Zero"] == 0)
             & (dataframe["Q_flag"] == "16384: flush"),
             "State_Flush",
@@ -449,7 +449,7 @@ class ProcessData:
         )
         for datetimeobject in datetimes_from_extended_flush:
             dataframe.loc[
-                dataframe["timestamp"] == datetimeobject, "State_ExtendedFlush"
+                dataframe["timestamp"] == datetimeobject, "State_Flush_plus60min"
             ] = 1
 
         for flushcycle_endtime in dataframe.groupby("flushcycle")["timestamp"].max():

@@ -10,6 +10,7 @@ def datetime_figure(figure_title, y_data_name):
     p = figure(
             title=figure_title,
             x_axis_type="datetime",
+            width=1500, height=400,
             tools=["wheel_zoom", "pan", "box_zoom", "undo", "reset", "save"],
         )
     p.xaxis.axis_label = "date"
