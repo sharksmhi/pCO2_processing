@@ -27,14 +27,14 @@ def modify_linear_regression_log(linear_regression_log, year, id, start, stop, a
             linear_regression_log[year][id]
             try:
                 if action == "remove":
-                    if len(linear_regression_log[year][id]["regression_periods"]) != 0:
+                    if len(linear_regression_log[year][id]["cruise_period"]) != 0:
                         for index, existing_regression_period in enumerate(
-                            linear_regression_log[year][id]["regression_periods"]
+                            linear_regression_log[year][id]["cruise_period"]
                         ):
                             print(index, existing_regression_period, regression_period)
                             if regression_period == existing_regression_period:
                                 linear_regression_log[year][id][
-                                    "regression_periods"
+                                    "cruise_period"
                                 ].pop(index)
                                 print(
                                     "removed {} from {}".format(
@@ -50,26 +50,26 @@ def modify_linear_regression_log(linear_regression_log, year, id, start, stop, a
                         regression_period == existing_regression_period
                         for existing_regression_period in linear_regression_log[year][
                             id
-                        ]["regression_periods"]
+                        ]["cruise_period"]
                     )
                 ):
-                    linear_regression_log[year][id]["regression_periods"].append(
+                    linear_regression_log[year][id]["cruise_period"].append(
                         regression_period
                     )
                 elif action == "add":
                     print("{} is already in regression log".format(regression_period))
                     print("current log for {} cruise {}".format(year, id))
             except KeyError:
-                linear_regression_log[year][id]["regression_periods"] = [
+                linear_regression_log[year][id]["cruise_period"] = [
                     regression_period
                 ]
         except KeyError:
             linear_regression_log[year][id] = {
-                "regression_periods": [regression_period]
+                "cruise_period": [regression_period]
             }
     except KeyError:
         linear_regression_log[year] = {}
-        linear_regression_log[year][id] = {"regression_periods": [regression_period]}
+        linear_regression_log[year][id] = {"cruise_period": [regression_period]}
 
 
 def print_linear_regression_log(linear_regression_log):
@@ -106,7 +106,7 @@ def add_flag(df, start, stop, flag_string=""):
 
 def get_valid_data(
     dataframe,
-    validation_dict={"Q_flag": ["0: Operate"], "state": ["Measure"]},
+    validation_dict={"Q_flag": ["0: Operate"], "state": ["State_Measure"]},
     condition="or",
 ):
     combined_filter = bool(len(dataframe))

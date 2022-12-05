@@ -557,6 +557,9 @@ class ProcessData:
         self.zerocycles_slope = zerocycles_stats.slope
         self.zerocycles_intercept = zerocycles_stats.intercept
 
+        self.zerocycles_mean_df["slope"] = self.zerocycles_slope
+        self.zerocycles_mean_df["intercept"] = self.zerocycles_intercept
+
     def process_data(self, df=False, recalculate=False):
         # log instead:
         # print("check quality...")
