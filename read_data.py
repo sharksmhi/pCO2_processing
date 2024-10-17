@@ -234,7 +234,7 @@ class Cruise:
             sep="\t",
             index=False,
         )
-        print(f"measurement rawdata saved to {save_path}_zeroings.txt")
+        print(f"measurement rawdata saved to {save_path}_measurements.txt")
 
     def get_data_package(self):
         """
