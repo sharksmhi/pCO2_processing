@@ -482,7 +482,7 @@ class ProcessData:
         self._add_zero_cycle_details()
 
         row_selection = (
-            (self.zerocycles_df.zerocycle_runtime >= 30)
+            (self.zerocycles_df.zerocycle_runtime >= pd.Timedelta('0hr0m30s'))
             & (self.zerocycles_df.State_Zero == 1)
             & (~np.isnan(self.zerocycles_df.Signal_Raw))
             & (self.zerocycles_df.Quality == 0)
