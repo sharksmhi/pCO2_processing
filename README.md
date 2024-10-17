@@ -22,7 +22,7 @@
     *Adds:*
 
     - zerocycle_runtime (float, seconds) and zerocycle (integer, cycle number)
-    - flushcycle_runtime (float, seconds) and flushcycle (integer, cycle number)
+    - flushcycle_runtime (float, seconds) and flushcycle (integer, cycle number) --- This is currently a TimeDelta object, perhaps something has changed in the dependencies
     - State_Measure (when StateZero and StateFlush are == 0, could also be set to not >0)
     - State_Wash between 05:00-07:00 and 17:00-19:00 every day
     - cruise_runtime (float, seconds)
