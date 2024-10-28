@@ -480,9 +480,12 @@ class ProcessData:
     def zerocycles_linearregression(self):
 
         self._add_zero_cycle_details()
+        #  the self.zerocycles_df['zerocycle_runtime'] series is of type Object with some Timedelta. The logical statement at row 488
+        #  will not work in all environments. The line below is added to deal with this.
+        self.zerocycles_df['zerocycle_runtime'] = pd.to_timedelta(self.zerocycles_df['zerocycle_runtime']).dt.total_seconds()
 
         row_selection = (
-            (self.zerocycles_df.zerocycle_runtime >= pd.Timedelta('0hr0m30s'))
+            (self.zerocycles_df.zerocycle_runtime >= 30)
             & (self.zerocycles_df.State_Zero == 1)
             & (~np.isnan(self.zerocycles_df.Signal_Raw))
             & (self.zerocycles_df.Quality == 0)
